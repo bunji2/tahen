@@ -36,4 +36,19 @@ x = data[col_x].values
 y = data[col_y].values
 print "----"
 print col_x.decode('utf8'), '-', col_y.decode('utf8')
-print "r =".decode('utf8'), shiki_3_3(x, y)
+print "r =", shiki_3_3(x, y)
+
+#P48
+
+def shiki_3_10(x, y):
+    sxy = np.sum((x - np.mean(x))*(y - np.mean(y))) / len(x)
+    sx = np.sqrt(np.var(x))
+    sy = np.sqrt(np.var(y))
+    return sxy/(sx*sy)
+
+col_x, col_y = '結果', '予想'
+x = data[col_x].values
+y = data[col_y].values
+print "----"
+print col_x.decode('utf8'), '-', col_y.decode('utf8')
+print "r =", shiki_3_10(x, y)
