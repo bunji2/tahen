@@ -50,6 +50,7 @@ print "----"
 total = np.sum(sum1)
 print "合計 =".decode('utf8'), total
 
+#p59
 # 期待値の計算
 print "----"
 data2 = data.copy()
@@ -64,6 +65,7 @@ for index in data.index:
 
 print data2
 
+#p61
 print "----"
 
 data3 = data2 - data
@@ -71,47 +73,104 @@ data3 = data3 * data3 / data2
 print data3
 
 print "合計 =".decode('utf8'), np.sum(data3.values)
-quit()
-col_x,col_y = '面接の成績','現在の実力'
 
-def shiki_3_3(x, y):
-    mean_x = np.mean(x)
-    mean_y = np.mean(y)
-    #print x, y, mean_x, mean_y
-    rx = x - mean_x
-    ry = y - mean_y
-    return np.sum(rx*ry) / np.sqrt(np.sum(rx*rx)*np.sum(ry*ry))
-
-x = data[col_x].values
-y = data[col_y].values
-
+#p63
 print "----"
-print col_x.decode('utf8'), '-', col_y.decode('utf8')
-print "r =".decode('utf8'), shiki_3_3(x, y)
 
-#P46
-csvfile = "tab3.6.csv"
+#print data3.shape, np.min(data3.shape), np.max(data3.shape)
+Nmin = np.min(data3.shape)
+N = total
+
+q = np.sqrt(np.sum(data3.values)/(N*(Nmin-1)))
+print "q =", q
+
+# p64
+csvfile = "tab4.5.csv"
 data = pd.read_csv(csvfile, index_col=0)
 print "----", csvfile, "----"
 print data
-col_x,col_y = '結果','予想'
-x = data[col_x].values
-y = data[col_y].values
+
+def calc_every_means_and_total_mean(data):
+    d = []
+    mean1 = []
+    for index in data.index:
+        #print index.decode('utf8')
+        mean1.append(np.mean(data.loc[index].values))
+        d.extend(data.loc[index].values)
+    means = pd.DataFrame(mean1, index=data.index, columns=['平均'])
+    return means, np.sum(d), np.mean(d)
+
+# 各行の平均を計算
 print "----"
-print col_x.decode('utf8'), '-', col_y.decode('utf8')
-print "r =", shiki_3_3(x, y)
 
-#P48
 
-def shiki_3_10(x, y):
-    sxy = np.sum((x - np.mean(x))*(y - np.mean(y))) / len(x)
-    sx = np.sqrt(np.var(x))
-    sy = np.sqrt(np.var(y))
-    return sxy/(sx*sy)
+#print sum1
 
-col_x, col_y = '結果', '予想'
-x = data[col_x].values
-y = data[col_y].values
-print "----"
-print col_x.decode('utf8'), '-', col_y.decode('utf8')
-print "r =", shiki_3_10(x, y)
+means, total_sum, total_mean = calc_every_means_and_total_mean(data)
+
+print means
+print '全平均 ='.decode('utf8'), total_mean
+
+print "----", "tab4.6", "----"
+data2 = data - total_mean
+print data2
+_, total_sum, _ = calc_every_means_and_total_mean(data2)
+print '合計 ='.decode('utf8'), total_sum
+
+data2 = data2 * data2
+print data2
+_, total_sum, _ = calc_every_means_and_total_mean(data2)
+print '合計 ='.decode('utf8'), total_sum
+
+print "----", "kitai", "----"
+kitai = data.copy()
+for column in data.columns:
+    kitai[column] = means['平均'].values
+print kitai
+
+# p67
+print "----", "tab4.8", "----"
+data3 = kitai - total_mean
+print data3
+data3 = data3 * data3
+print data3
+
+_, total_sum2, _ = calc_every_means_and_total_mean(data3)
+
+print '合計 ='.decode('utf8'), total_sum2
+
+# p68
+print 'p =', np.sqrt(total_sum2 / total_sum)
+
+def shiki_4_1(data):
+    d = []
+    means = []
+    for index in data.index:
+        #print index.decode('utf8')
+        means.append(np.mean(data.loc[index].values))
+        d.extend(data.loc[index].values)
+    total_sum = np.sum(d)
+    total_mean = np.mean(d)
+    kitai = data.copy()
+    for column in data.columns:
+        kitai[column] = means
+    #print "kitai =", kitai
+    data2 = kitai - total_mean
+    #print "data2 =", data2
+    data2 = data2 * data2
+    d = []
+    for column in data2.columns:
+        d.extend(data2[column])
+    #a = np.sum(d) * len(data.columns)
+    a = np.sum(d)
+    #print "a =", a
+    data3 = data - total_mean
+    data3 = data3 * data3
+    d = []
+    for column in data3.columns:
+        d.extend(data3[column])
+    b = np.sum(d)
+    #print "b =", b
+    return np.sqrt(a/b)
+
+print 'p =', shiki_4_1(data)
